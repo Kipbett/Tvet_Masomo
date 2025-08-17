@@ -15,7 +15,7 @@ class Department(models.Model):
 class CustomUser(AbstractUser):
     profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
     department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True, blank=True)
-    phone_number = models.IntegerField(null=False, blank=False)
+    phone_number = models.IntegerField(null=True, blank=True)
     def __str__(self):
         return f"{self.first_name} {self.last_name} {self.department}"
 

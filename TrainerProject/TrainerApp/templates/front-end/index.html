@@ -1,0 +1,54 @@
+{% extends "front-end/base.html" %}
+
+{% block main_block %}
+<div>
+    <h2 class="text-center">Welcome to TVET Trainer</h2>
+    <p class="text-center pe-5 ps-5 pt-3">This is the home page of the TVET Trainer application. Here you can find the latest news and updates related to TVET training.</p>
+</div>
+<div class="container mt-5">
+    <div class="row flex-lg-wrap flex-md-wrap">
+        <div class="col-md-4 shadow-sm m-0 p-1 bg-white rounded">
+            <h3 class="text-center">Cycle One</h3>
+            <p class="text-center">Information about Cycle One training programs.</p>
+            <a href="{% url "departments" %}" class="btn btn-primary ms-3 mb-3">Learn More</a>
+        </div>
+        <div class="col-md-4 shadow-sm m-0 p-1 bg-white rounded">
+            <h3 class="text-center">Cycle Two</h3>
+            <p class="text-center">Information about Cycle Two training programs.</p>
+            <a href="{% url "departments" %}" class="btn btn-primary ms-3 mb-3">Learn More</a>
+        </div>
+        <div class="col-md-4 shadow-sm m-0 p-1 bg-white rounded-1">
+            <h3 class="text-center">Modular Training</h3>
+            <p class="text-center">Explore our modular training options.</p>
+            <a href="{% url "departments" %}" class="btn btn-primary ms-3 mb-3">Learn More</a>
+        </div>
+    </div>
+</div>
+<div class="container bg-white mt-5 mb-5 rounded-3">
+    <h2 class="text-center pt-3 pb-3">Platform features</h2>
+    <div class="row mb-3 pb-3">
+        <div class="col-md-6 col-sm-12">
+            <div class="text-center h1">🎯</div>
+            <h4 class="text-center">Structured Learning</h4>
+            <p class="text-center">Organized curriculum with clear progression paths</p>
+        </div>
+        <div class="col-md-6 col-sm-12">
+            <div class="text-center h1">📋</div>
+            <h4 class="text-center">Comprehensive Resources</h4>
+            <p class="text-center">Complete course materials and study guides</p>
+        </div>
+    </div>
+    <div class="row mb-3 pb-3">
+        <div class="col-md-6 col-sm-12">
+            <div class="text-center h1">🏫</div>
+            <h4 class="text-center">Department Focus</h4>
+            <p class="text-center">Specialized content organized by academic department</p>
+        </div>
+        <div class="col-md-6 col-sm-12">
+            <div class="text-center h1">📱</div>
+            <h4 class="text-center">Responsive Design</h4>
+            <p class="text-center">Access your courses on any device, anywhere</p>
+        </div>
+    </div>
+</div>
+{% endblock main_block %}

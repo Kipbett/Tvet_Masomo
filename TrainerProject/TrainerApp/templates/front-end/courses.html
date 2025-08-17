@@ -1,0 +1,17 @@
+{% extends "front-end/base.html" %}
+
+{% block main_block %}
+    <h1>{{department.department_name }} Courses</h1>
+    <div class="courses">
+        {% if courses %}
+        <ol>
+            {% for course in courses %}
+                <li>
+                    <a href="{% url "units" course.id %}">{{ course.course_name }}</a> {{ course.course_level}}
+                </li>
+            {% endfor %}
+        {% else %}
+            <p>No Departments available.</p>
+        {% endif %}
+    </div>
+{% endblock %}  

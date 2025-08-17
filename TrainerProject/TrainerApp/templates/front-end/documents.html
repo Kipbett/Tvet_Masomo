@@ -1,0 +1,63 @@
+{% extends "front-end/base.html" %}
+
+{% block main_block %}
+    <h4>Unit Name: {{ unit.unit_name}}</h4>
+    <h4>Unit Code: {{ unit.unit_code }}</h4>
+    <div>
+        {% if documents %}
+            <h6>Occupational Standard</h6>
+            <ol>
+            {% for document in documents %}
+            {% if document.document_type == "OS"%}
+                <li>
+                    <a href="{{ document.document_file.url}}" target="_blank">{{ document.document_name }}</a>
+                </li>
+                
+            {% endif%}
+            {% endfor %}
+            </ol>
+            <h6>Curriculum</h6>
+            <ol>
+            {% for document in documents %}
+            {% if document.document_type == "CU"%}
+                <li>
+                    <a href="#">{{ document.document_name }}</a>
+                </li>
+            {% endif%}
+            {% endfor %}
+            </ol>
+            <h6>Learning Plan</h6>
+            <ol>
+            {% for document in documents %}
+            {% if document.document_type == "LP"%}
+                <li>
+                    <a href="#">{{ document.document_name }}</a>
+                </li>
+            {% endif%}
+            {% endfor %}
+            </ol>
+            <h6>PC Weighting Tool</h6>
+            <ol>
+            {% for document in documents %}
+            {% if document.document_type == "WT"%}
+                <li>
+                    <a href="#">{{ document.document_name }}</a>
+                </li>
+            {% endif%}
+            {% endfor %}
+            </ol>
+            <h6>Past Papers</h6>
+            <ol>
+            {% for document in documents %}
+            {% if document.document_type == "AT"%}
+                <li>
+                    <a href="#">{{ document.document_name }}</a>
+                </li>
+            {% endif%}
+            {% endfor %}
+            </ol>
+        {% else %}
+            <p>No documents available.</p>
+        {% endif %}
+    </div>
+{% endblock %}  

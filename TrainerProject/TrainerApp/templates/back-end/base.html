@@ -1,0 +1,63 @@
+<html>
+<head>
+    <title>TrainerApp</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .sidebar {
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            background-color: #eea00fff;
+            padding-top: 20px;
+        }
+        .sidebar .nav-link {
+            color: #ffffff;
+            padding: 10px 20px;
+            transition: background-color 0.3s;
+        }
+        .sidebar .nav-link:hover {
+            background-color: #495057;
+        }
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body> 
+    <div class="sidebar">
+        <h3 class="text-white text-center mb-4">Tvet Tusome</h3>
+        {% if user.is_authenticated %}
+            <img src={{ user.profile_picture.url }} alt="User Profile" class="rounded-circle mx-auto d-block" height='50px' width='50px'>
+            <p class="text-white text-center mb-2">{{ user.username }}</p>
+            <p class="text-white text-center mb-2">{{ user.email }}</p>
+            <p class="text-white text-center mb-2">{{ user.department }}</p>
+        {% endif %}
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" href="#">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'user-courses' user.department.id %}">Courses</a>
+            </li>
+            {% comment %} <li class="nav-item">
+                <a class="nav-link" href="#">Cycle 2</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Cycle 3</a>
+            </li> {% endcomment %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'user-logout' %}">Logout</a>
+            </li>
+        </ul>
+    </div>
+    <div class="content">
+        {% block main_block%}
+
+        {% endblock%}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

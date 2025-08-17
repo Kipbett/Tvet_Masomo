@@ -1,0 +1,28 @@
+{% extends "front-end/base.html" %}
+
+{% block main_block %}
+<div class="container">
+    <h3 class="h3 text-center mt-3 mb-3">Departments</h3>
+    <p class="text-center mb-3">Explore our various departments offering specialized training programs.</p>
+</div>
+<div class="container">
+    
+</div>
+    <h1>Departments</h1>
+    <div class="cards">
+        {% if departments %}
+        {% for department in departments %}
+            <div class="card">
+                <img class="card-image card-img-top" src="{{ department.department_image.url }}" alt="Department Image">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <a href="{% url "courses" department.id %}">{{ department.department_name }}</a>
+                    </h4>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No Departments available.</p>
+        {% endif %}
+        </div>
+{% endblock %}  
