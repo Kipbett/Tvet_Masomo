@@ -1,28 +1,39 @@
 {% extends "front-end/base.html" %}
 
+{% load static %}
+
 {% block main_block %}
 <div class="container">
     <h3 class="h3 text-center mt-3 mb-3">Departments</h3>
     <p class="text-center mb-3">Explore our various departments offering specialized training programs.</p>
 </div>
 <div class="container">
-    
-</div>
-    <h1>Departments</h1>
-    <div class="cards">
-        {% if departments %}
-        {% for department in departments %}
-            <div class="card">
-                <img class="card-image card-img-top" src="{{ department.department_image.url }}" alt="Department Image">
-                <div class="card-body">
-                    <h4 class="card-title">
-                        <a href="{% url "courses" department.id %}">{{ department.department_name }}</a>
-                    </h4>
+    {% if departments %}
+    {% for department in departments %}
+    <div class="row justify-content-center mb-4 bg-white p-3 rounded">
+        <div class="col-md-2 col-sm-12">
+            <img src="{{ department.department_image.url }}" alt="{{ department.department_name }}" class="rounded img-fluid">
+        </div>
+        <div class="col-md-8 col-sm-12 align-content-around">
+            <div class="row">
+                <div class="col-12">
+                    <p class="text-center h3">{{ department.department_name}}</p>
                 </div>
             </div>
-            {% endfor %}
-        {% else %}
-            <p>No Departments available.</p>
-        {% endif %}
+            <div class="row justify-content-center">
+                <div class="col-md-6 col-sm-12">
+                    <p class="text-center">{{ department.department_description }}</p>
+                </div>
+                <div class="col-md-6 col-sm-12 text-center">
+                    <a href="{% url 'courses' department.id %}" class="btn btn-info">View Courses</a>
+                </div>
+            </div>
         </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="alert alert-warning text-center" role="alert">
+        <strong>No departments found!</strong> Please check back later.
+    </div>
+    {% endif %}
 {% endblock %}  

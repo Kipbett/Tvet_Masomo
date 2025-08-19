@@ -1,63 +1,36 @@
 {% extends "front-end/base.html" %}
 
 {% block main_block %}
-    <h4>Unit Name: {{ unit.unit_name}}</h4>
-    <h4>Unit Code: {{ unit.unit_code }}</h4>
-    <div>
+    <div class="container bg-light mt-2 rounded">
+        <h4>Unit Name: {{ unit.unit_name}}</h4>
+        <h4>Unit Code: {{ unit.unit_code }}</h4>
+    </div>
+    <div class="container mt-3">
         {% if documents %}
-            <h6>Occupational Standard</h6>
-            <ol>
-            {% for document in documents %}
-            {% if document.document_type == "OS"%}
-                <li>
-                    <a href="{{ document.document_file.url}}" target="_blank">{{ document.document_name }}</a>
-                </li>
-                
-            {% endif%}
-            {% endfor %}
-            </ol>
-            <h6>Curriculum</h6>
-            <ol>
-            {% for document in documents %}
-            {% if document.document_type == "CU"%}
-                <li>
-                    <a href="#">{{ document.document_name }}</a>
-                </li>
-            {% endif%}
-            {% endfor %}
-            </ol>
-            <h6>Learning Plan</h6>
-            <ol>
-            {% for document in documents %}
-            {% if document.document_type == "LP"%}
-                <li>
-                    <a href="#">{{ document.document_name }}</a>
-                </li>
-            {% endif%}
-            {% endfor %}
-            </ol>
-            <h6>PC Weighting Tool</h6>
-            <ol>
-            {% for document in documents %}
-            {% if document.document_type == "WT"%}
-                <li>
-                    <a href="#">{{ document.document_name }}</a>
-                </li>
-            {% endif%}
-            {% endfor %}
-            </ol>
-            <h6>Past Papers</h6>
-            <ol>
-            {% for document in documents %}
-            {% if document.document_type == "AT"%}
-                <li>
-                    <a href="#">{{ document.document_name }}</a>
-                </li>
-            {% endif%}
-            {% endfor %}
-            </ol>
+        <div class="container">
+            <table class="table table-striped bg-white rounded">
+                <thead>
+                    <tr>
+                        <th>Document Name</th>
+                        <th>Document Type</th>
+                        <th>Download</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for document in documents %}
+                        <tr>
+                            <td>{{ document.document_name }}</td>
+                            <td>{{ document.get_document_type_display }}</td>
+                            <td><a href="{{ document.document_file.url }}" class="btn btn-primary" target="_blank">Download</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         {% else %}
-            <p>No documents available.</p>
+            <div class="alert alert-warning text-center" role="alert">
+                <strong>No Documents found!</strong>
+            </div>
         {% endif %}
     </div>
 {% endblock %}  

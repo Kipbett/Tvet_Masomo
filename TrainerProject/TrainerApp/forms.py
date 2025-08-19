@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import CustomUser
+from .models import Course, CustomUser, Document, Unit
 
 
 class LoginForm(forms.Form):
@@ -21,3 +21,18 @@ class RegisterForm(forms.ModelForm):
             'phone_number',
             'password'
         )
+        
+class AddCourseForm(forms.ModelForm):
+    class Meta:
+        model = Course
+        fields = ('course_name', 'course_code', 'cycle', 'course_level', 'course_image', )
+        
+class AddUnitForm(forms.ModelForm):
+    class Meta:
+        model = Unit
+        fields = ('unit_name', 'unit_code', 'module', 'competency')
+        
+class AddDocumentForm(forms.ModelForm):
+    class Meta:
+        model = Document
+        fields = ('document_name', 'document_file', 'document_type')

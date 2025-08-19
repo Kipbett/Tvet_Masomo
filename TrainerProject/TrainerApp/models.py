@@ -51,11 +51,17 @@ class Unit(models.Model):
         MODULE_4 = 'M4', 'Module 4'
         MODULE_5 = 'M5', 'Module 5'
         MODULE_6 = 'M6', 'Module 6'
+        
+    class CompetencyChoices(models.TextChoices):
+        BASIC = 'BC', 'Basic Competency'
+        CORE = 'CR', 'Core Competency'
+        COMMON = 'CC', 'Common Competency'
 
     module = models.CharField(max_length=2, choices=ModuleChoices.choices, default=ModuleChoices.MODULE_1, blank=True, null=True)
-    unit_code = models.CharField(max_length=10)
+    unit_code = models.CharField(max_length=20)
     unit_name = models.CharField(max_length=100)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    competency = models.CharField(max_length=2, choices=CompetencyChoices.choices, default=CompetencyChoices.BASIC , blank=True, null=True)
 
     def __str__(self):
         return f"{self.unit_name} {self.unit_code}"

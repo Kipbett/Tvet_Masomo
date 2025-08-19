@@ -1,3 +1,4 @@
+{% load crispy_forms_tags %}
 <html>
 <head>
     <title>TrainerApp</title>
@@ -5,9 +6,8 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-
     <div class="container">
-        <div class="col">
+        <div class="row">
             <div class="col-md-6 col-sm-12 col-lg-6">
                 <div class="logo">
                     {% comment %} <img src="{% static 'images/logo.png' %}" alt="TrainerApp Logo" class="img-fluid">  {% endcomment %}
@@ -17,7 +17,7 @@
                 <h2>Login</h2>
                 <form method="post" action="">
                     {% csrf_token %}
-                    {{ login_form.as_p }}
+                    {{ login_form|crispy }}
                     <button type="submit" class="btn btn-primary">Login</button>
                 </form>
                 {% if messages %}

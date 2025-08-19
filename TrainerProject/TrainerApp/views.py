@@ -1,6 +1,6 @@
 from django.shortcuts import redirect, render
 
-from .forms import LoginForm, RegisterForm
+from .forms import AddCourseForm, AddDocumentForm, AddUnitForm, LoginForm, RegisterForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 
@@ -78,6 +78,66 @@ def user_courses(request, id):
     user_department = request.user.department_id
     courses = Course.objects.filter(department_id=user_department)
     return render(request, 'back-end/user-courses.html', {'courses': courses})
+
+def user_units(request, id):
+    user_course = Course.objects.get(id=id)
+    units = Unit.objects.filter(course=user_course)
+    return render(request, 'back-end/user-units.html', {'units': units, 'course': user_course})
+
+def user_resources(request, id):
+    user_unit = Unit.objects.get(id=id)
+    documents = Document.objects.filter(unit=user_unit)
+    return render(request, 'back-end/user-resources.html', {'documents': documents, 'unit': user_unit})
+
+def add_course(request):
+    form = AddCourseForm()
+    if request.method == 'POST':
+        form = AddCourseForm(request.POST, request.FILES)
+        if form.is_valid():
+            course = form.save(commit=False)
+            course.department = request.user.department
+            course.save()
+            messages.success(request, "Course added successfully")
+            return redirect('user-courses', id=request.user.id)
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = AddCourseForm()
+    return render(request, 'back-end/add-course.html', {'form': form})
+
+def add_unit(request, id):
+    course = Course.objects.get(id=id)
+    if request.method == 'POST':
+        form = AddUnitForm(request.POST, request.FILES)
+        if form.is_valid():
+            unit = form.save(commit=False)
+            unit.course = course
+            unit.save()
+            messages.success(request, "Unit added successfully")
+            return redirect('user-units', id=course.id)
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = AddUnitForm()
+    return render(request, 'back-end/add-unit.html', {'form': form, 'course': course})
+
+def add_document(request, id):
+    unit = Unit.objects.get(id=id)
+    user = request.user
+    if request.method == 'POST':
+        form = AddDocumentForm(request.POST, request.FILES)
+        if form.is_valid():
+            document = form.save(commit=False)
+            document.unit = unit
+            document.uploaded_by = user
+            document.save()
+            messages.success(request, "Document added successfully")
+            return redirect('user-documents', id=unit.id)
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = AddDocumentForm()
+    return render(request, 'back-end/add-document.html', {'form': form, 'unit': unit})
 
 def user_logout(request):
     logout(request)

@@ -1,0 +1,45 @@
+{% extends "back-end/base.html" %}
+
+{% block main_block %}
+<div class="container-fluid shadow-sm">
+    <h3 class="h3">Unit Resources</h3>
+    <p class="text-center mb-3">Resources for <strong>{{ unit.unit_name }}</strong> <br> Unit Code <strong>{{ unit.unit_code }}</strong></p>
+</div>
+    <div class="container d-flex justify-content-end mb-3">
+        <a href="{% url 'add-document' unit.id %}" class="text-end btn btn-sm btn-outline-warning rounded">ADD DOCUMENT</a>
+    </div>
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} mt-3">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% if documents %}
+            <div class="container">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Document Name</th>
+                            <th>Type</th>
+                            <th>Uploaded By</th>
+                            <th>View Document</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for document in documents %}
+                        <tr>
+                            <td>{{ document.document_name }}</td>
+                            <td>{{ document.get_document_type_display }}</td>
+                            <td>{{ document.uploaded_by.username }}</td>
+                            <td>
+                                <a href="{{ document.document_file.url }}" class="btn btn-sm btn-primary" target="_blank">View</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+            </div>
+        {% else %}
+            <p>No documents available.</p>
+        {% endif %}
+    </div>
+{% endblock %}  

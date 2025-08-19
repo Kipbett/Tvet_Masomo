@@ -1,20 +1,31 @@
+{% load crispy_forms_tags %}
 <html>
     <head>
-
+        <title>TrainerApp - Register</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     </head>
-    <body>
-        <form method="post" action="">
-            {% csrf_token %}
-            {{ register_form.as_p }}
-            <button type="submit">Register</button>
-        </form>
-        <p>Already have an account? <a href="{% url 'user-login' %}">Login here</a></p>
-        {% if messages %}
-            <ul>
-                {% for message in messages %}
+    <body class="container">
+        <div class="row">
+            <div class="col-md-6 ">
+                <h1>Register</h1>
+            </div>
+            <div class="col-md-6">
+                <p>Welcome to TrainerApp! Please fill out the form below to create a new account.</p>
+
+                <form method="post" action="">
+                    {% csrf_token %}
+                    {{ register_form|crispy }}
+                    <button type="submit" class="btn btn-success btn-sm">Register</button>
+                </form>
+                <p>Already have an account? <a href="{% url 'user-login' %}">Login here</a></p>
+                {% if messages %}
+                <ul>
+                    {% for message in messages %}
                     <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+        </div>
     </body>
 </html>

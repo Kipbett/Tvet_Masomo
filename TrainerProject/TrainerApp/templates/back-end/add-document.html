@@ -1,0 +1,21 @@
+{% extends "back-end/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block main_block %}
+<div class="container-fluid shadow-sm">
+    <h3 class="h3">Add Document for {{ unit.unit_name }}</h3>
+    <p class="text-center mb-3">Fill in the details below to create a new document.</p>
+</div>
+<div class="container">
+    <h3 class="h3 text-center mt-3 mb-3">Add a New Document</h3>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-primary">Add Document</button>
+    </form>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} mt-3">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endblock main_block %}
