@@ -216,7 +216,7 @@ def payment_wait(request):
                     'merchant_request_id': query_data.get("MerchantRequestID", ""),
                     'result_code': int(query_data.get("ResultCode", 0)),
                     'result_desc': query_data.get("ResultDesc", ""),
-                    'amount': next((item['Value'] for item in query_data.get("CallbackMetadata", {}).get("Item", []) if item['Name'] == 'Amount'), 0),
+                    'amount': float(next((item['Value'] for item in query_data.get("CallbackMetadata", {}).get("Item", []) if item['Name'] == 'Amount'), 0)),
                     'transaction_id': next((item['Value'] for item in query_data.get("CallbackMetadata", {}).get("Item", []) if item['Name'] == 'MpesaReceiptNumber'), ""),
                     'user_phone_number': next((item['Value'] for item in query_data.get("CallbackMetadata", {}).get("Item", []) if item['Name'] == 'PhoneNumber'), "")
                 }
@@ -298,16 +298,16 @@ def process_stk_callback(request):
         result_desc = body['ResultDesc']
 
         with transaction.atomic():
-            if result_code == 0:
+            if result_code == "0":
                 callback_metadata = body['CallbackMetadata']['Item']
-                amount = next(item['Value'] for item in callback_metadata if item['Name'] == 'Amount')
+                amount = float(next(item['Value'] for item in callback_metadata if item['Name'] == 'Amount'))
                 transaction_id = next(item['Value'] for item in callback_metadata if item['Name'] == 'MpesaReceiptNumber')
                 phone_number = next(item['Value'] for item in callback_metadata if item['Name'] == 'PhoneNumber')
                 
                 Transactions.objects.create(
                     merchant_request_id=merchant_request_id,
                     checkout_request_id=checkout_request_id,
-                    result_code=result_code,
+                    result_code=int(result_code),
                     result_desc=result_desc,
                     amount=amount,
                     transaction_id=transaction_id,
@@ -317,7 +317,7 @@ def process_stk_callback(request):
                 Transactions.objects.create(
                     merchant_request_id=merchant_request_id,
                     checkout_request_id=checkout_request_id,
-                    result_code=result_code,
+                    result_code=int(result_code),
                     result_desc=result_desc
                 )
         return HttpResponse("Callback processed successfully", status=200)
@@ -338,43 +338,45 @@ def check_transaction_status(request):
             return JsonResponse({
                 'status': 'success',
                 'message': 'Payment successful. Redirecting to download page.',
-                'redirect_url': '/download-lp/'  # Adjust URL as needed
+                'redirect_url': request.build_absolute_uri('download-lp') # Adjust URL as needed
             })
         else:
             return JsonResponse({
                 'status': 'failed',
                 'message': transaction.result_desc,
-                'redirect_url': '/tvet-ai/'  # Adjust URL to retry or home page
+                'redirect_url': request.build_absolute_uri('tvet-ai')  # Adjust URL to retry or home page
             })
     return JsonResponse({'status': 'pending', 'message': 'Payment still processing'})
-def check_stk_status(request):
-    if request.method == 'GET' and 'request_id' in request.GET:
-        request_id = request.GET['request_id']
-        
-        # Call the query function
-        confirm = lipa_na_mpesa.query_stk(request_id)
-        query_response = confirm.json()
-        result_code = query_response.get("ResultCode")
-        
-        # Return the status in a JSON response
-        return JsonResponse({
-            'result_code': result_code,
-            'message': get_status_message(result_code)
-        })
-    return JsonResponse({'error': 'Invalid request'}, status=400)
 
-def get_status_message(result_code):
-    """Helper function to map result codes to messages."""
-    if result_code == '0':
-        return "Payment Made successfully. Proceed to Download Your document."
-    elif result_code == '1037':
-        return "Request Timed Out"
-    elif result_code == '1032':
-        return "You Cancelled The Transaction"
-    elif result_code == '1':
-        return "You have insufficient balance"
-    else:
-        return "Unknown status. Please check your transaction details."
+
+# def check_stk_status(request):
+#     if request.method == 'GET' and 'request_id' in request.GET:
+#         request_id = request.GET['request_id']
+        
+#         # Call the query function
+#         confirm = lipa_na_mpesa.query_stk(request_id)
+#         query_response = confirm.json()
+#         result_code = query_response.get("ResultCode")
+        
+#         # Return the status in a JSON response
+#         return JsonResponse({
+#             'result_code': result_code,
+#             'message': get_status_message(result_code)
+#         })
+#     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+# def get_status_message(result_code):
+#     """Helper function to map result codes to messages."""
+#     if result_code == '0':
+#         return "Payment Made successfully. Proceed to Download Your document."
+#     elif result_code == '1037':
+#         return "Request Timed Out"
+#     elif result_code == '1032':
+#         return "You Cancelled The Transaction"
+#     elif result_code == '1':
+#         return "You have insufficient balance"
+#     else:
+#         return "Unknown status. Please check your transaction details."
 def get_courses(request):
     department_id = int(request.GET.get('department'))
     if department_id:
