@@ -88,3 +88,36 @@ class Document(models.Model):
     def __str__(self):
         return self.document_name
 
+class Transactions(models.Model):
+    merchant_request_id = models.CharField(max_length=50, null=True, blank=True)
+    checkout_request_id = models.CharField(max_length=50, null=True, blank=True)
+    result_code = models.IntegerField(null=True, blank=True)
+    result_desc = models.CharField(max_length=255, null=True, blank=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    transaction_id = models.CharField(max_length=50, null=True, blank=True)
+    user_phone_number = models.CharField(max_length=15, null=True, blank=True)
+    transaction_time = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Transaction {self.transaction_id} by {self.user_phone_number}"
+    
+class TrainingSession(models.Model):
+    trainer_name = models.CharField(max_length=100)
+    trainer_number = models.CharField(max_length=15)
+    name_of_institution = models.CharField(max_length=200)
+    date_of_preparation = models.DateField()
+    number_of_learners = models.IntegerField()
+    course_class = models.CharField(max_length=100)
+    number_of_weeks = models.IntegerField(null=True, blank=True)
+    number_of_sessions_per_week = models.IntegerField(null=True, blank=True)
+    hours_per_session = models.IntegerField(null=True, blank=True)
+    hours_per_session = models.IntegerField(null=True, blank=True)
+    hours_per_session = models.IntegerField(null=True, blank=True)
+    department = models.CharField(max_length=100, null=True, blank=True)
+    course = models.CharField(max_length=100,null=True, blank=True)
+    unit = models.CharField(max_length=100, null=True, blank=True)
+    transaction = models.ForeignKey(Transactions, on_delete=models.SET_NULL, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.trainer_name} - {self.course}"

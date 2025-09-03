@@ -20,6 +20,14 @@ urlpatterns = [
     path('contrib/add-course/', views.add_course, name='add-course'),
     path('contrib/add-unit/<int:id>/', views.add_unit, name='add-unit'),
     path('contrib/add-document/<int:id>', views.add_document, name='add-document'),
+    path('tvet-ai/', views.selection_view, name='tvet-ai'),
+    path('ajax/get-courses/', views.get_courses, name='get_courses'),
+    path('ajax/get-units/', views.get_units, name='get_units'),
+    path('ajax/get-documents/', views.get_documents, name='get_documents'),
+    path('api/check-stk-status/', views.check_stk_status, name='check-stk-status-api'),
+    path("callback/", views.process_stk_callback, name="stk-callback"),
+    path('payment-wait/', views.payment_wait, name='payment-wait'),
+    path('check-transaction-status/', views.check_transaction_status, name='check-transaction-status'),
     path('contact', views.contact, name='contact')
 ]
 

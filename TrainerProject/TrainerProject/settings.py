@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'TrainerApp',
     'crispy_forms',
     'crispy_bootstrap5',
+    'background_task',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap5'

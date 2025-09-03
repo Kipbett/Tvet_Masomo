@@ -1,0 +1,16 @@
+{% extends "front-end/base.html" %}
+
+{% block main_block %}
+
+{% if os_document %}
+<a href="{{ os_document.file.url }}" download>Download Learning Path</a>
+{% else %}
+<p>No Learning Path available for download.</p>
+{% endif %}
+
+{% if cu_document %}
+<a href="{{ cu_document.file.url }}" download>Download Course Unit</a>
+{% else %}
+<p>No Course Unit available for download.</p>
+{% endif %}
+{% endblock main_block %}

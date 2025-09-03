@@ -10,7 +10,26 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
         <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-        {% comment %} <link href="{% static "main.css" %}" rel="stylesheet"/> {% endcomment %}
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <style>
+        .loader {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .message {
+            color: #333;
+            margin-top: 20px;
+        }
+    </style>
     </head>
     <body class="bg-warning">
         <nav class="navbar navbar-expand-lg navbar-light bg-light justify-content-end">
@@ -23,7 +42,7 @@
                         <a href="{% url "departments" %}" class="nav-link">Departments</a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link">TVET AI</a>
+                        <a href="{% url "tvet-ai" %}" class="nav-link">TVET AI</a>
                     </li>
                     <li class="nav-item">
                         <a href="{% url "home" %}" class="nav-link">TVET News</a>
