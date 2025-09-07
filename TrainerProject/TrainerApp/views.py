@@ -148,6 +148,12 @@ def add_document(request, id):
         form = AddDocumentForm()
     return render(request, 'back-end/add-document.html', {'form': form, 'unit': unit})
 
+def ai_home(request):
+    return render(request, 'front-end/tvet-ai.html')
+
+def session_plan(request):                       
+    return render(request, 'front-end/session-plan.html')
+
 def selection_view(request):
     form = SelectionForm()
     
@@ -192,7 +198,7 @@ def selection_view(request):
         else:
             messages.error(request, "Please correct the errors in the form.")
                        
-    return render(request, 'front-end/tvet-ai.html', {'form': form})
+    return render(request, 'front-end/learning_plan.html', {'form': form})
 
 @csrf_exempt
 def payment_wait(request):

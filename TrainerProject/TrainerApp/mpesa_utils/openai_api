@@ -1,5 +1,5 @@
 from openai import OpenAI
-from . import ai_api_key
+from utils import ai_api_key
 
 client = OpenAI(api_key= ai_api_key)
 

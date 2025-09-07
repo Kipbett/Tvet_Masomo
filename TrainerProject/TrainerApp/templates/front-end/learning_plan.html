@@ -1,0 +1,112 @@
+{% extends "front-end/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block main_block %}
+{% if messages %}
+    <ul>
+    {% for message in messages %}
+        <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+{% endif %}
+<h1 class="text-center">Generate Learning Plan</h1>
+    <div class="container bg-light p-2 rounded-2 col-md-10 col-sm-12 d-none">
+        <form id="selectionForm" method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <h2>Documents</h2>
+            <p>Occupational Standard: <a id="os_link" href="#" target="_blank">No document selected</a></p>
+            <p>Curriculum: <a id="curr_link" href="#" target="_blank">No document selected</a></p>
+            <button type="submit">PAY TO GENERATE</button>
+        </form>
+    </div>
+    <div class="alert alert-warning text-center" role="alert">
+        <p class='h4'>Coming Soon...</p>
+    </div>
+    <!-- jQuery CDN for AJAX -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Department change: Load courses
+            $('#id_department').change(function() {
+                var departmentId = $(this).val();
+                if (departmentId) {
+                    $.ajax({
+                        url: "{% url 'get_courses' %}",
+                        data: { 'department': departmentId },
+                        success: function(data) {
+                            $('#id_course').empty().append('<option value="">Select Course</option>');
+                            $.each(data, function(index, course) {
+                                $('#id_course').append('<option value="' + course.id + '">' + course.name + '</option>');
+                            });
+                            // Reset downstream fields
+                            $('#id_unit').empty().append('<option value="">Select Unit</option>');
+                            $('#os_link').attr('href', '#').text('No document selected');
+                            $('#curr_link').attr('href', '#').text('No document selected');
+                        }
+                    });
+                } else {
+                    $('#id_course').empty().append('<option value="">Select Course</option>');
+                    $('#id_unit').empty().append('<option value="">Select Unit</option>');
+                }
+            });
+
+            // Course change: Load units
+            $('#id_course').change(function() {
+                var courseId = $(this).val();
+                if (courseId) {
+                    $.ajax({
+                        url: "{% url 'get_units' %}",
+                        data: { 'course': courseId },
+                        success: function(data) {
+                            $('#id_unit').empty().append('<option value="">Select Unit</option>');
+                            $.each(data, function(index, unit) {
+                                $('#id_unit').append('<option value="' + unit.id + '">' + unit.name + '</option>');
+                            });
+                            // Reset documents
+                            $('#os_link').attr('href', '#').text('No document selected');
+                            $('#curr_link').attr('href', '#').text('No document selected');
+                        }
+                    });
+                } else {
+                    $('#id_unit').empty().append('<option value="">Select Unit</option>');
+                }
+            });
+
+            // Unit change: Fetch documents
+            $('#id_unit').change(function() {
+                var unitId = $(this).val();
+                if (unitId) {
+                    $.ajax({
+                        url: "{% url 'get_documents' %}",
+                        data: { 'unit': unitId },
+                        success: function(data) {
+                            if(data.error) {
+                                $('#os_link').attr('href', '#').text(data.error);
+                                $('#curr_link').attr('href', '#').text(data.error);
+                                return;
+                            } else {
+                                // Update document links
+                                if (data.occupational_standards) {
+                                    $('#os_link').attr('href', data.occupational_standards).text('Download Occupational Standard');
+                                } else {
+                                    $('#os_link').attr('href', '#').text('No document available');
+                                }
+                                if (data.curriculum) {
+                                    $('#curr_link').attr('href', data.curriculum).text('Download Curriculum');
+                                } else {
+                                    $('#curr_link').attr('href', '#').text('No document available');
+                                }
+                            }
+                        },
+                        error: function() {
+                            $('#os_link').attr('href', '#').text('Error fetching documents');
+                            $('#curr_link').attr('href', '#').text('Error fetching documents');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+{% endblock main_block %}
