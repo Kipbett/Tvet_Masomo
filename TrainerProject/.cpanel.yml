@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - /bin/cp -R TrainerProject /home/cezfcsoc/public_html/
+    - /bin/cp -R requirements.txt /home/cezfcsoc/public_html
