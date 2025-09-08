@@ -2,8 +2,9 @@
 deployment:
   tasks:
     - export DEPLOYMENT_ID=$DEPLOYMENT_ID
-    - export DEPLOY_PATH=/home/cezfcsoc/public_html/TrainerProject
-    - /bin/cp -R TrainerProject /home/cezfcsoc/public_html/ $DEPLOY_PATH/
+    - export DEPLOY_PATH=/home/cezfcsoc/public_html/Tvet_Masomo
+    - /bin/mkdir -p $DEPLOY_PATH
+    - /bin/cp -R Tvet_Masomo /home/cezfcsoc/public_html/ $DEPLOY_PATH/
     - /bin/bash -c "source /home/cezfcsoc/virtualenv/masomo/3.11/bin/activate && cd $DEPLOY_PATH && pip install -r requirements.txt"
     - /bin/bash -c "source /home/cezfcsoc/virtualenv/masomo/3.11/bin/activate && cd $DEPLOY_PATH && python manage.py collectstatic --noinput"
     - /bin/bash -c "source /home/cezfcsoc/virtualenv/masomo/3.11/bin/activate && cd $DEPLOY_PATH && python manage.py migrate"
