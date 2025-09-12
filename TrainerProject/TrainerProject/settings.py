@@ -28,11 +28,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-z0l)y&al(8oxu7ciu4a0ji4=p8k((ro-p%w+f9q1dl2!$9n&&k'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
-    'www.tvettrainer.co.ke',
-    'tvettrainer.co.ke',
 ]
 
 

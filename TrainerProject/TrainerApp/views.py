@@ -99,6 +99,8 @@ def user_resources(request, id):
     return render(request, 'back-end/user-resources.html', {'documents': documents, 'unit': user_unit})
 
 def add_course(request):
+    user_department = request.user.department_id
+    courses = Course.objects.filter(department_id=user_department)
     form = AddCourseForm()
     if request.method == 'POST':
         form = AddCourseForm(request.POST, request.FILES)
@@ -107,12 +109,12 @@ def add_course(request):
             course.department = request.user.department
             course.save()
             messages.success(request, "Course added successfully")
-            return redirect('user-courses', id=request.user.id)
+            return redirect('add-course', id=request.user.id)
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
         form = AddCourseForm()
-    return render(request, 'back-end/add-course.html', {'form': form})
+    return render(request, 'back-end/add-course.html', {'form': form, 'courses': courses})
 
 def add_unit(request, id):
     course = Course.objects.get(id=id)
@@ -123,7 +125,7 @@ def add_unit(request, id):
             unit.course = course
             unit.save()
             messages.success(request, "Unit added successfully")
-            return redirect('user-units', id=course.id)
+            return redirect('add-unit', id=course.id)
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
@@ -141,7 +143,7 @@ def add_document(request, id):
             document.uploaded_by = user
             document.save()
             messages.success(request, "Document added successfully")
-            return redirect('user-documents', id=unit.id)
+            return redirect('add-document', id=unit.id)
         else:
             messages.error(request, 'Please correct the errors below.')
     else:

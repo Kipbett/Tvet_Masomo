@@ -6,6 +6,7 @@
     <p class="text-center mb-3">Resources for <strong>{{ unit.unit_name }}</strong> <br> Unit Code <strong>{{ unit.unit_code }}</strong></p>
 </div>
     <div class="container d-flex justify-content-end mb-3">
+        <a href="{% url 'user-units' unit.id %}" class="text-end btn btn-sm btn-outline-warning rounded">BACK TO UNITS</a>
         <a href="{% url 'add-document' unit.id %}" class="text-end btn btn-sm btn-outline-warning rounded">ADD DOCUMENT</a>
     </div>
     <div class="container">
