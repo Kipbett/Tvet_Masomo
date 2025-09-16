@@ -6,6 +6,12 @@
     <h3 class="h3">Add Document for {{ unit.unit_name }}</h3>
     <p class="text-center mb-3">Fill in the details below to create a new document.</p>
 </div>
+<a href="{% url "user-units" unit.id %}">Back To Units</a>
+{% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} mt-3">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
 <div class="container">
     <h3 class="h3 text-center mt-3 mb-3">Add a New Document</h3>
     <form method="POST" enctype="multipart/form-data">
@@ -13,9 +19,5 @@
         {{ form|crispy }}
         <button type="submit" class="btn btn-primary">Add Document</button>
     </form>
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} mt-3">{{ message }}</div>
-        {% endfor %}
-    {% endif %}
+    
 {% endblock main_block %}

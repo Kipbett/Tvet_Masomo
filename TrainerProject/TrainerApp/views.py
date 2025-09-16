@@ -2,6 +2,7 @@ import json
 import time
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET
 import logging
@@ -9,11 +10,16 @@ from django.db import transaction
 
 from .mpesa_utils import lipa_na_mpesa
 
-from .forms import AddCourseForm, AddDocumentForm, AddUnitForm, LoginForm, MpesaForm, RegisterForm, SelectionForm
+from .forms import AddCourseForm, AddDocumentForm, AddUnitForm, LoginForm, MpesaForm, RegisterForm, SelectionForm, UploadFilesForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 
 from .models import Course, Department, Document, TrainingSession, Transactions, Unit, CustomUser
+
+from openai import OpenAI
+from .mpesa_utils.utils import ai_api_key
+
+client = OpenAI(api_key= ai_api_key)
 
 # Create your views here.
 
@@ -99,6 +105,8 @@ def user_resources(request, id):
     return render(request, 'back-end/user-resources.html', {'documents': documents, 'unit': user_unit})
 
 def add_course(request):
+    user_department = request.user.department_id
+    courses = Course.objects.filter(department_id=user_department)
     form = AddCourseForm()
     if request.method == 'POST':
         form = AddCourseForm(request.POST, request.FILES)
@@ -107,12 +115,12 @@ def add_course(request):
             course.department = request.user.department
             course.save()
             messages.success(request, "Course added successfully")
-            return redirect('user-courses', id=request.user.id)
+            return redirect('add-course', id=request.user.id)
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
         form = AddCourseForm()
-    return render(request, 'back-end/add-course.html', {'form': form})
+    return render(request, 'back-end/add-course.html', {'form': form, 'courses': courses})
 
 def add_unit(request, id):
     course = Course.objects.get(id=id)
@@ -123,7 +131,7 @@ def add_unit(request, id):
             unit.course = course
             unit.save()
             messages.success(request, "Unit added successfully")
-            return redirect('user-units', id=course.id)
+            return redirect('add-unit', id=course.id)
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
@@ -141,7 +149,7 @@ def add_document(request, id):
             document.uploaded_by = user
             document.save()
             messages.success(request, "Document added successfully")
-            return redirect('user-documents', id=unit.id)
+            return redirect('add-document', id=unit.id)
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
@@ -419,3 +427,59 @@ def user_logout(request):
     messages.success(request, "You have been logged out successfully.")
     return redirect('user-login')
 
+def upload_and_analyze(request):
+    form = UploadFilesForm()
+    if request.method == "POST":
+        form = UploadFilesForm(request.POST, request.FILES)
+        if form.is_valid():
+            # Save uploaded files temporarily
+            curriculum = request.FILES["curriculum"]
+            occupational_standard = request.FILES["occupational_standard"]
+
+            # Step 1: Upload both files to OpenAI
+            curriculum_file = client.files.create(
+                file=(curriculum.name, curriculum.read(), "application/pdf"),
+                purpose="user_data"
+            )
+            os_file = client.files.create(
+                file=(occupational_standard.name, occupational_standard.read(), "application/pdf"),
+                purpose="user_data"
+            )
+
+            # Step 2: Send request to OpenAI
+            response = client.responses.create(
+                model="gpt-5",
+                input=[
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "input_text",
+                                "text": (
+                                    "Analyze the curriculum and occupational standard "
+                                    "and generate a learning plan summary with key points."
+                                ),
+                            },
+                            {"type": "input_file", "file_id": curriculum_file.id},
+                            {"type": "input_file", "file_id": os_file.id},
+                        ],
+                    }
+                ],
+            )
+
+            # Step 3: Clean up files from OpenAI (optional)
+            # client.files.delete(curriculum_file.id)
+            # client.files.delete(os_file.id)
+            ai_output = response.output_text
+            request.session["ai_output"] = ai_output
+
+            # Redirect to results page
+            return redirect('show_results')
+    else:
+        form = UploadFilesForm()
+
+    return render(request, "front-end/upload.html", {"form": form})
+
+def show_results(request):
+    ai_output = request.session.get("ai_output", "No results found.")
+    return render(request, "front-end/results.html", {"ai_output": ai_output})

@@ -5,6 +5,10 @@
 <p>Please complete the payment on your phone for Checkout Request ID: {{ checkout_request_id }}</p>
 <div class="loader"></div>
     <p class="message" id="status-message">Checking payment status...</p>
+
+</div>
+<div class="text-center">
+    <a href="{% url 'tvet-ai' %}" class="btn btn-secondary mt-3">Proceed To generate</a>
 </div>
     <script>
         function pollTransactionStatus() {

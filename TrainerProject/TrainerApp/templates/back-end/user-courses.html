@@ -9,35 +9,339 @@
     <h3 class="h3 text-center mt-3 mb-3">{{ department.department_name }}</h3>
     <a href="{% url "add-course" %}" class="btn btn-sm btn-outline-info mb-3 justify-content-end">ADD COURSE</a>
 </div>
-<div class="container">
-    {% if courses %}
-    {% for course in courses %}
-    <div class="row justify-content-center mb-4 bg-white p-3 rounded">
-        <div class="col-md-2 col-sm-12">
-            <img src="{{ course.course_image.url }}" alt="{{ course.course_name }}" class="img-thumbnail rounded img-fluid">
-        </div>
-        <div class="col-md-8 col-sm-12 align-content-around">
-            <div class="row">
-                <div class="col-12">
-                    <p class="text-center h3">{{ course.course_name}} Level {{ course.course_level }} Cycle {{ course.cycle}}</p>
+
+<ul class="nav nav-tabs nav-justified">
+  <li class="nav-item dropdown active">
+    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#cycle1">Cycle 1</a>
+    <ul class="dropdown-menu">
+        <li><a class="dropdown-item" data-bs-toggle="tab" href="#c1l4">Level 4</a></li>
+        <li><a class="dropdown-item" data-bs-toggle="tab" href="#c1l5">Level 5</a></li>
+        <li><a class="dropdown-item" data-bs-toggle="tab" href="#c1l6">Level 6</a></li>
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#cycle2">Cycle 2</a>
+    <ul class="dropdown-menu">
+        <li><a class="dropdown-item" data-bs-toggle="tab" href="#c2l4">Level 4</a></li>
+        <li><a class="dropdown-item" data-bs-toggle="tab" href="#c2l5">Level 5</a></li>
+        <li><a class="dropdown-item" data-bs-toggle="tab" href="#c2l6">Level 6</a></li>
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#cycle3">Cycle 3</a>
+    <ul class="dropdown-menu">
+        <li><a class="dropdown-item" data-bs-toggle="tab" href="#c3l4">Level 4</a></li>
+        <li><a class="dropdown-item" data-bs-toggle="tab" href="#c3l5">Level 5</a></li>
+        <li><a class="dropdown-item" data-bs-toggle="tab" href="#c3l6">Level 6</a></li>
+    </ul>
+  </li>
+</ul>
+
+<div class="container tab-content">
+    <div class="tab-pane container active" id="c1l4">
+        {% if courses %}
+        {% for course in courses %}
+            {% if course.course_level == 'L4' and course.cycle == 'C1'%}
+                <div class="row justify-content-center mb-4 bg-white p-3 rounded">
+                    <div class="col-md-2 col-sm-12">
+                        <img src="{{ course.course_image.url }}" alt="{{ course.course_name }}" class="img-thumbnail rounded img-fluid">
+                    </div>
+                    <div class="col-md-8 col-sm-12 align-content-around">
+                        <div class="row">
+                            <div class="col-12">
+                                <p class="text-center h3">{{ course.course_name}} Level {{ course.course_level }} Cycle {{ course.cycle}}</p>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6 col-sm-12">
+                                <p class="text-center">{{ course.course_code }}</p>
+                            </div>
+                            <div class="col-md-6 col-sm-12 text-center">
+                                <a href="{% url 'user-units' course.id %}" class="btn btn-info">View Units</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            {% endif %}
+        {% endfor %}
+        {% else %}
+            <div class="alert alert-warning text-center" role="alert">
+                <p><strong>No units found!</strong></p>
+                <a href="#" class="alert-link btn btn-info">ADD UNIT</a>
             </div>
-            <div class="row justify-content-center">
-                <div class="col-md-6 col-sm-12">
-                    <p class="text-center">{{ course.course_code }}</p>
+        {% endif %}
+    </div>
+
+    <div class="tab-pane container fade" id="c1l5">
+        {% if courses %}
+        {% for course in courses %}
+            {% if course.course_level == 'L5' and course.cycle == 'C1'%}
+                <div class="row justify-content-center mb-4 bg-white p-3 rounded">
+                    <div class="col-md-2 col-sm-12">
+                        <img src="{{ course.course_image.url }}" alt="{{ course.course_name }}" class="img-thumbnail rounded img-fluid">
+                    </div>
+                    <div class="col-md-8 col-sm-12 align-content-around">
+                        <div class="row">
+                            <div class="col-12">
+                                <p class="text-center h3">{{ course.course_name}} Level {{ course.course_level }} Cycle {{ course.cycle}}</p>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6 col-sm-12">
+                                <p class="text-center">{{ course.course_code }}</p>
+                            </div>
+                            <div class="col-md-6 col-sm-12 text-center">
+                                <a href="{% url 'user-units' course.id %}" class="btn btn-info">View Units</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-6 col-sm-12 text-center">
-                    <a href="{% url 'user-units' course.id %}" class="btn btn-info">View Units</a>
-                </div>
+            {% endif %}
+        {% endfor %}
+        {% else %}
+            <div class="alert alert-warning text-center" role="alert">
+                <p><strong>No units found!</strong></p>
+                <a href="#" class="alert-link btn btn-info">ADD UNIT</a>
             </div>
-        </div>
+        {% endif %}
     </div>
-    {% endfor %}
-    {% else %}
-    <div class="alert alert-warning text-center" role="alert">
-        <p><strong>No units found!</strong></p>
-        <a href="#" class="alert-link btn btn-info">ADD UNIT</a>
+
+    <div class="tab-pane container fade" id="c1l6">
+        {% if courses %}
+        {% for course in courses %}
+            {% if course.course_level == 'L6' and course.cycle == 'C1'%}
+                <div class="row justify-content-center mb-4 bg-white p-3 rounded">
+                    <div class="col-md-2 col-sm-12">
+                        <img src="{{ course.course_image.url }}" alt="{{ course.course_name }}" class="img-thumbnail rounded img-fluid">
+                    </div>
+                    <div class="col-md-8 col-sm-12 align-content-around">
+                        <div class="row">
+                            <div class="col-12">
+                                <p class="text-center h3">{{ course.course_name}} Level {{ course.course_level }} Cycle {{ course.cycle}}</p>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6 col-sm-12">
+                                <p class="text-center">{{ course.course_code }}</p>
+                            </div>
+                            <div class="col-md-6 col-sm-12 text-center">
+                                <a href="{% url 'user-units' course.id %}" class="btn btn-info">View Units</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+        {% else %}
+            <div class="alert alert-warning text-center" role="alert">
+                <p><strong>No units found!</strong></p>
+                <a href="#" class="alert-link btn btn-info">ADD UNIT</a>
+            </div>
+        {% endif %}
     </div>
-    {% endif %}
+
+    <div class="tab-pane container fade" id="c2l4">
+        {% if courses %}
+        {% for course in courses %}
+            {% if course.course_level == 'L4' and course.cycle == 'C2'%}
+                <div class="row justify-content-center mb-4 bg-white p-3 rounded">
+                    <div class="col-md-2 col-sm-12">
+                        <img src="{{ course.course_image.url }}" alt="{{ course.course_name }}" class="img-thumbnail rounded img-fluid">
+                    </div>
+                    <div class="col-md-8 col-sm-12 align-content-around">
+                        <div class="row">
+                            <div class="col-12">
+                                <p class="text-center h3">{{ course.course_name}} Level {{ course.course_level }} Cycle {{ course.cycle}}</p>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6 col-sm-12">
+                                <p class="text-center">{{ course.course_code }}</p>
+                            </div>
+                            <div class="col-md-6 col-sm-12 text-center">
+                                <a href="{% url 'user-units' course.id %}" class="btn btn-info">View Units</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+        {% else %}
+            <div class="alert alert-warning text-center" role="alert">
+                <p><strong>No units found!</strong></p>
+                <a href="#" class="alert-link btn btn-info">ADD UNIT</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="tab-pane container fade" id="c2l5">
+        {% if courses %}
+        {% for course in courses %}
+            {% if course.course_level == 'L5' and course.cycle == 'C2'%}
+                <div class="row justify-content-center mb-4 bg-white p-3 rounded">
+                    <div class="col-md-2 col-sm-12">
+                        <img src="{{ course.course_image.url }}" alt="{{ course.course_name }}" class="img-thumbnail rounded img-fluid">
+                    </div>
+                    <div class="col-md-8 col-sm-12 align-content-around">
+                        <div class="row">
+                            <div class="col-12">
+                                <p class="text-center h3">{{ course.course_name}} Level {{ course.course_level }} Cycle {{ course.cycle}}</p>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6 col-sm-12">
+                                <p class="text-center">{{ course.course_code }}</p>
+                            </div>
+                            <div class="col-md-6 col-sm-12 text-center">
+                                <a href="{% url 'user-units' course.id %}" class="btn btn-info">View Units</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+        {% else %}
+            <div class="alert alert-warning text-center" role="alert">
+                <p><strong>No units found!</strong></p>
+                <a href="#" class="alert-link btn btn-info">ADD UNIT</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="tab-pane container fade" id="c2l6">
+        {% if courses %}
+        {% for course in courses %}
+            {% if course.course_level == 'L6' and course.cycle == 'C2'%}
+                <div class="row justify-content-center mb-4 bg-white p-3 rounded">
+                    <div class="col-md-2 col-sm-12">
+                        <img src="{{ course.course_image.url }}" alt="{{ course.course_name }}" class="img-thumbnail rounded img-fluid">
+                    </div>
+                    <div class="col-md-8 col-sm-12 align-content-around">
+                        <div class="row">
+                            <div class="col-12">
+                                <p class="text-center h3">{{ course.course_name}} Level {{ course.course_level }} Cycle {{ course.cycle}}</p>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6 col-sm-12">
+                                <p class="text-center">{{ course.course_code }}</p>
+                            </div>
+                            <div class="col-md-6 col-sm-12 text-center">
+                                <a href="{% url 'user-units' course.id %}" class="btn btn-info">View Units</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+        {% else %}
+            <div class="alert alert-warning text-center" role="alert">
+                <p><strong>No units found!</strong></p>
+                <a href="#" class="alert-link btn btn-info">ADD UNIT</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="tab-pane container fade" id="c3l4">
+        {% if courses %}
+        {% for course in courses %}
+            {% if course.course_level == 'L4' and course.cycle == 'C3'%}
+                <div class="row justify-content-center mb-4 bg-white p-3 rounded">
+                    <div class="col-md-2 col-sm-12">
+                        <img src="{{ course.course_image.url }}" alt="{{ course.course_name }}" class="img-thumbnail rounded img-fluid">
+                    </div>
+                    <div class="col-md-8 col-sm-12 align-content-around">
+                        <div class="row">
+                            <div class="col-12">
+                                <p class="text-center h3">{{ course.course_name}} Level {{ course.course_level }} Cycle {{ course.cycle}}</p>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6 col-sm-12">
+                                <p class="text-center">{{ course.course_code }}</p>
+                            </div>
+                            <div class="col-md-6 col-sm-12 text-center">
+                                <a href="{% url 'user-units' course.id %}" class="btn btn-info">View Units</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+        {% else %}
+            <div class="alert alert-warning text-center" role="alert">
+                <p><strong>No units found!</strong></p>
+                <a href="#" class="alert-link btn btn-info">ADD UNIT</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="tab-pane container fade" id="c3l5">
+        {% if courses %}
+        {% for course in courses %}
+            {% if course.course_level == 'L5' and course.cycle == 'C3'%}
+                <div class="row justify-content-center mb-4 bg-white p-3 rounded">
+                    <div class="col-md-2 col-sm-12">
+                        <img src="{{ course.course_image.url }}" alt="{{ course.course_name }}" class="img-thumbnail rounded img-fluid">
+                    </div>
+                    <div class="col-md-8 col-sm-12 align-content-around">
+                        <div class="row">
+                            <div class="col-12">
+                                <p class="text-center h3">{{ course.course_name}} Level {{ course.course_level }} Cycle {{ course.cycle}}</p>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6 col-sm-12">
+                                <p class="text-center">{{ course.course_code }}</p>
+                            </div>
+                            <div class="col-md-6 col-sm-12 text-center">
+                                <a href="{% url 'user-units' course.id %}" class="btn btn-info">View Units</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+        {% else %}
+            <div class="alert alert-warning text-center" role="alert">
+                <p><strong>No units found!</strong></p>
+                <a href="#" class="alert-link btn btn-info">ADD UNIT</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="tab-pane container fade" id="c3l6">
+        {% if courses %}
+        {% for course in courses %}
+            {% if course.course_level == 'L6' and course.cycle == 'C3'%}
+                <div class="row justify-content-center mb-4 bg-white p-3 rounded">
+                    <div class="col-md-2 col-sm-12">
+                        <img src="{{ course.course_image.url }}" alt="{{ course.course_name }}" class="img-thumbnail rounded img-fluid">
+                    </div>
+                    <div class="col-md-8 col-sm-12 align-content-around">
+                        <div class="row">
+                            <div class="col-12">
+                                <p class="text-center h3">{{ course.course_name}} Level {{ course.course_level }} Cycle {{ course.cycle}}</p>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6 col-sm-12">
+                                <p class="text-center">{{ course.course_code }}</p>
+                            </div>
+                            <div class="col-md-6 col-sm-12 text-center">
+                                <a href="{% url 'user-units' course.id %}" class="btn btn-info">View Units</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+        {% else %}
+            <div class="alert alert-warning text-center" role="alert">
+                <p><strong>No units found!</strong></p>
+                <a href="#" class="alert-link btn btn-info">ADD UNIT</a>
+            </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
