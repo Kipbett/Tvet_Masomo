@@ -435,48 +435,62 @@ def upload_and_analyze(request):
             # Save uploaded files temporarily
             curriculum = request.FILES["curriculum"]
             occupational_standard = request.FILES["occupational_standard"]
+            
+            curriculum_bytes = curriculum.read()
+            os_bytes = occupational_standard.read()
 
             # Step 1: Upload both files to OpenAI
-            curriculum_file = client.files.create(
-                file=(curriculum.name, curriculum.read(), "application/pdf"),
-                purpose="user_data"
-            )
-            os_file = client.files.create(
-                file=(occupational_standard.name, occupational_standard.read(), "application/pdf"),
-                purpose="user_data"
-            )
+            try:
+                curriculum_file = client.files.create(
+                    file=(curriculum.name, curriculum_bytes, "application/pdf"),
+                    purpose="user_data"
+                )
+                os_file = client.files.create(
+                    file=(occupational_standard.name, os_bytes, "application/pdf"),
+                    purpose="user_data"
+                )
 
-            # Step 2: Send request to OpenAI
-            response = client.responses.create(
-                model="gpt-5",
-                input=[
-                    {
-                        "role": "user",
-                        "content": [
-                            {
-                                "type": "input_text",
-                                "text": (
-                                    "Analyze the curriculum and occupational standard "
-                                    "and generate a learning plan summary with key points."
-                                ),
-                            },
-                            {"type": "input_file", "file_id": curriculum_file.id},
-                            {"type": "input_file", "file_id": os_file.id},
-                        ],
-                    }
-                ],
-            )
+                # Add timeout safeguard
+                response = client.responses.create(
+                    model="gpt-5",
+                    input=[
+                        {
+                            "role": "user",
+                            "content": [
+                                {
+                                    "type": "input_text", 
+                                    "text": "Generate a learning plan from the documents."
+                                },
+                                {
+                                    "type": "input_file", 
+                                    "file_id": curriculum_file.id
+                                },
+                                {
+                                    "type": "input_file", 
+                                    "file_id": os_file.id
+                                },
+                            ],
+                        }
+                    ],
+                    timeout=60  # 60 sec max wait
+                )
 
-            # Step 3: Clean up files from OpenAI (optional)
-            # client.files.delete(curriculum_file.id)
-            # client.files.delete(os_file.id)
-            ai_output = response.output_text
-            request.session["ai_output"] = ai_output
+                logging.warning(f"OpenAI Response: {response}")
 
-            # Redirect to results page
-            return redirect('show_results')
-    else:
-        form = UploadFilesForm()
+                if response.output and len(response.output) > 0:
+                    ai_output = response.output[0].content[0].text
+                else:
+                    ai_output = "No output returned."
+
+                request.session["ai_output"] = ai_output
+                return redirect("show_results")
+
+            except Exception as e:
+                logging.error(f"OpenAI error: {e}")
+                return render(request, "front-end/upload.html", {
+                    "form": form,
+                    "error": f"OpenAI request failed: {e}"
+                })
 
     return render(request, "front-end/upload.html", {"form": form})
 
