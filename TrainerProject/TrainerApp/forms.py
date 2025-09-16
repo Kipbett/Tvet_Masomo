@@ -40,11 +40,11 @@ class AddDocumentForm(forms.ModelForm):
         
 class SelectionForm(forms.Form):
     
-    trainer_name = forms.CharField(max_length=100)
+    trainer_name = forms.CharField(max_length=100, widget=forms.NumberInput(attrs={'placeholder': 'Enter Your Name'}))
     phone_number = forms.IntegerField(label="Enter Your M-PESA Number", widget=forms.NumberInput(attrs={'placeholder': '254700XXXXXX'}))
-    number_weeks = forms.IntegerField()
-    number_of_sessions_per_week = forms.IntegerField()
-    hours_per_session = forms.IntegerField()
+    number_weeks = forms.IntegerField(widget=forms.NumberInput(attrs={'placeholder': 'Number of Weeks for the Term'}))
+    number_of_sessions_per_week = forms.IntegerField(widget=forms.NumberInput(attrs={'placeholder': 'Number of Sessions per Week'}))
+    hours_per_session = forms.IntegerField(widget=forms.NumberInput(attrs={'placeholder': 'Hours per Session'}))
     
     department = forms.ModelChoiceField(
         queryset=Department.objects.all(),
@@ -74,7 +74,7 @@ class SelectionForm(forms.Form):
         self.helper.layout = Layout(
             Row(
                 Column('trainer_name', css_class='form-group col-md-6 col-sm-12'),
-                Column('phone_number', css_class='form-group col-md-6 col-sm-12')
+                Column('phone_number', css_class='form-group col-md-6 col-sm-12'),
             ),
             Row(
                 Column('number_weeks', css_class='form-group col-md-6 col-sm-12'),
@@ -87,9 +87,9 @@ class SelectionForm(forms.Form):
             Row(
                 
                 Column('course', css_class='form-group col-md-6 col-sm-12'),
-                Column('unit', css_class='form-group col-md-6 col-sm-12')
+                Column('unit', css_class='form-group col-md-6 col-sm-12'),
             ),
-            Submit('submit', 'Submit', css_class='btn btn-primary')
+            Submit('submit', 'Submit', css_class='btn btn-primary'),
         )
         
         # Handle server-side queryset filtering for form validation (if form is submitted)
@@ -108,3 +108,7 @@ class SelectionForm(forms.Form):
 
 class MpesaForm(forms.Form):
     mpesa_number = forms.IntegerField(label="Enter your Mpesa Number", widget=forms.NumberInput(attrs={'placeholder': '254700XXXXXX'}))
+
+class UploadFilesForm(forms.Form):
+    curriculum = forms.FileField(label="Upload Curriculum (PDF)")
+    occupational_standard = forms.FileField(label="Upload Occupational Standard (PDF)")

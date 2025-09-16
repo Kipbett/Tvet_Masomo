@@ -10,7 +10,7 @@
     </ul>
 {% endif %}
 <h1 class="text-center">Generate Learning Plan</h1>
-    <div class="container bg-light p-2 rounded-2 col-md-10 col-sm-12 d-none">
+    <div class="container bg-light p-2 rounded-2 col-md-10 col-sm-12">
         <form id="selectionForm" method="post">
             {% csrf_token %}
             {{ form|crispy }}
@@ -20,7 +20,7 @@
             <button type="submit">PAY TO GENERATE</button>
         </form>
     </div>
-    <div class="alert alert-warning text-center" role="alert">
+    <div class="alert alert-warning text-center d-none" role="alert">
         <p class='h4'>Coming Soon...</p>
     </div>
     <!-- jQuery CDN for AJAX -->
