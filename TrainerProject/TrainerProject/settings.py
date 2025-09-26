@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'background_task',
+    "django_celery_results",
+    "django_celery_beat",
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
@@ -146,3 +148,8 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 AUTH_USER_MODEL = 'TrainerApp.CustomUser'
 
+# CELERY_BROKER_URL = "redis://localhost:6379/0"
+# CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
+
+CELERY_BROKER_URL = "memory://"
+CELERY_RESULT_BACKEND = "django-db"

@@ -110,5 +110,8 @@ class MpesaForm(forms.Form):
     mpesa_number = forms.IntegerField(label="Enter your Mpesa Number", widget=forms.NumberInput(attrs={'placeholder': '254700XXXXXX'}))
 
 class UploadFilesForm(forms.Form):
+    num_weeks = forms.IntegerField(label="Number of Weeks", widget=forms.NumberInput(attrs={'placeholder': 'e.g., 12'}))
+    sessions_per_week = forms.IntegerField(label="Sessions per Week", widget=forms.NumberInput(attrs={'placeholder': 'e.g., 3'}))
+    hours_per_session = forms.IntegerField(label="Hours per Session", widget=forms.NumberInput(attrs={'placeholder': 'e.g., 2'}))
     curriculum = forms.FileField(label="Upload Curriculum (PDF)")
     occupational_standard = forms.FileField(label="Upload Occupational Standard (PDF)")

@@ -10,10 +10,97 @@
         <link rel="stylesheet" href="">
     </head>
     <body>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Analyze</button>
-        </form>
+        <form id="uploadForm" enctype="multipart/form-data" method="post">
+  {% csrf_token %}
+  <input type="file" name="curriculum" required>
+  <input type="file" name="occupational_standard" required>
+  Weeks: <input type="number" name="weeks" value="12"><br><br>
+      Sessions per week: <input type="number" name="sessions" value="3"><br><br>
+      Hours per session: <input type="number" name="hours" value="2"><br><br>
+  <button type="submit">Generate Plan</button>
+</form>
+
+<div id="status" style="margin-top:10px;"></div>
+
+<!-- Progress bar -->
+<div id="progress-container" style="width:100%; background:#eee; border-radius:6px; height:24px; margin-top:10px; display:none;">
+  <div id="progress-bar" 
+       style="width:0%; height:100%; background:#4caf50; border-radius:6px; text-align:center; color:white; font-size:12px; line-height:24px; transition: width 0.8s ease;">
+    0%
+  </div>
+</div>
+
+<script>
+const progressSteps = {
+    "Parsing uploaded files...": 25,
+    "Generating learning plan with AI...": 60,
+    "Formatting and saving document...": 90
+};
+
+document.getElementById("uploadForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const statusDiv = document.getElementById("status");
+    const progressContainer = document.getElementById("progress-container");
+    const progressBar = document.getElementById("progress-bar");
+
+    statusDiv.innerHTML = "⏳ Uploading files...";
+    progressContainer.style.display = "block";
+    progressBar.style.width = "0%";
+    progressBar.innerHTML = "0%";
+    progressBar.style.background = "#4caf50";
+
+    try {
+        // Step 1: Upload and start background task
+        let response = await fetch("{% url 'upload_and_start' %}", {
+            method: "POST",
+            body: formData
+        });
+        let data = await response.json();
+
+        if (!data.task_id) {
+            statusDiv.innerHTML = "❌ Error: " + (data.error || "Task could not be started");
+            progressContainer.style.display = "none";
+            return;
+        }
+
+        const taskId = data.task_id;
+        statusDiv.innerHTML = "✅ Files uploaded. Starting generation...";
+
+        // Step 2: Poll task status every 3s
+        const interval = setInterval(async () => {
+            let res = await fetch(`/check-task-status/${taskId}/`);
+            let result = await res.json();
+
+            if (result.status === "completed") {
+                clearInterval(interval);
+                progressBar.style.width = "100%";
+                progressBar.innerHTML = "100%";
+                statusDiv.innerHTML = "📄 Document ready. Redirecting...";
+                setTimeout(() => { window.location.href = result.download_url; }, 1200);
+
+            } else if (result.status === "failed") {
+                clearInterval(interval);
+                progressBar.style.background = "red";
+                progressBar.style.width = "100%";
+                progressBar.innerHTML = "Failed";
+                statusDiv.innerHTML = "❌ " + (result.progress || "Task failed.");
+
+            } else {
+                let stepMsg = result.progress || "Processing...";
+                statusDiv.innerHTML = `⏳ ${stepMsg}`;
+                let percent = progressSteps[stepMsg] || parseInt(progressBar.style.width) || 10;
+                progressBar.style.width = percent + "%";
+                progressBar.innerHTML = percent + "%";
+            }
+        }, 3000);
+
+    } catch (err) {
+        statusDiv.innerHTML = "❌ Error: " + err.message;
+        progressContainer.style.display = "none";
+    }
+});
+</script>
     </body>
 </html>

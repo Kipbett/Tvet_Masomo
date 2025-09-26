@@ -1,12 +1,22 @@
+import io
 import json
+import os
 import time
-from django.http import HttpResponse, JsonResponse
+import uuid
+import PyPDF2
+from django.conf import settings
+from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET
 import logging
 from django.db import transaction
+from celery.result import AsyncResult
+
+from .mpesa_utils.plan_generater import generate_learning_plan_doc
+
+from .tasks import generate_plan_task
 
 from .mpesa_utils import lipa_na_mpesa
 
@@ -422,77 +432,110 @@ def get_documents(request):
             pass
     return JsonResponse({'error': 'Invalid unit'}, status=400)
 
+def upload_form(request):
+    # this serves the HTML page with the form
+    return render(request, "front-end/upload.html")
+
+@csrf_exempt
+def upload_and_start(request):
+    if request.method == "POST":
+        curriculum = request.FILES.get("curriculum")
+        occupational_standard = request.FILES.get("occupational_standard")
+        weeks = request.POST.get("weeks", 12)
+        sessions = request.POST.get("sessions", 3)
+        hours = request.POST.get("hours", 2)
+        
+        curriculum_text = ""
+        standard_text= ""
+
+        try:
+            # Open the PDF file in binary mode ('rb')
+            with open(curriculum, 'rb') as file:
+                # Create a PDF reader object
+                reader = PyPDF2.PdfReader(file)
+
+                # Get the number of pages in the PDF
+                num_pages = len(reader.pages)
+
+                # Iterate through all the pages and extract the text
+                for page_num in range(num_pages):
+                    page = reader.pages[page_num]
+                    curriculum += page.extract_text()
+            
+                curriculum = curriculum.encode("ascii", "ignore").decode("ascii")
+                # Now you can use the 'curriculum' variable which contains all the text from the PDF
+                # print(curriculum)
+    
+        except FileNotFoundError:
+            print(f"Error: The file at {curriculum} was not found.")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+    
+        try:
+            # Open the PDF file in binary mode ('rb')
+            with open(occupational_standard, 'rb') as file:
+                # Create a PDF reader object
+                reader = PyPDF2.PdfReader(file)
+
+                # Get the number of pages in the PDF
+                num_pages = len(reader.pages)
+
+                 # Iterate through all the pages and extract the text
+                for page_num in range(num_pages):
+                    page = reader.pages[page_num]
+                    standard += page.extract_text()
+            
+                standard = standard.encode("ascii", "ignore").decode("ascii")
+            # Now you can use the 'standard' variable which contains all the text from the PDF
+            # print(standard)
+    
+        except FileNotFoundError:
+            print(f"Error: The file at {occupational_standard} was not found.")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            
+        if not curriculum or not occupational_standard:
+            return JsonResponse({"error": "Missing files"}, status=400)
+
+        curriculum_text = curriculum.read().decode("utf-8", errors="ignore")
+        standard_text = occupational_standard.read().decode("utf-8", errors="ignore")
+
+        # task = generate_plan_task.delay(curriculum_text, standard_text, weeks, sessions, hours)
+        # return JsonResponse({"task_id": task.id})
+        learning_plan = generate_learning_plan_doc(curriculum_text, standard_text, weeks, sessions, hours)
+        response = HttpResponse(learning_plan)
+        return response
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+
+def check_task_status(request, task_id):
+    result = AsyncResult(task_id)
+
+    if result.state == "PENDING":
+        return JsonResponse({"status": "pending", "progress": "Waiting in queue..."})
+    elif result.state == "PROGRESS":
+        return JsonResponse({"status": "in-progress", "progress": result.info.get("step", "Processing...")})
+    elif result.state == "SUCCESS":
+        file_path = result.result["file_path"]
+        download_url = settings.MEDIA_URL + file_path
+        return JsonResponse({"status": "completed", "download_url": download_url})
+    elif result.state == "FAILURE":
+        return JsonResponse({"status": "failed", "progress": "Task failed."})
+    else:
+        return JsonResponse({"status": result.state})
+    
+def download_file(request, filename):
+    file_path = os.path.join("media", filename)
+    if not os.path.exists(file_path):
+        raise Http404("File not found")
+    return FileResponse(open(file_path, "rb"), as_attachment=True, filename=filename)
+
 def user_logout(request):
     logout(request)
     messages.success(request, "You have been logged out successfully.")
     return redirect('user-login')
 
-def upload_and_analyze(request):
-    form = UploadFilesForm()
-    if request.method == "POST":
-        form = UploadFilesForm(request.POST, request.FILES)
-        if form.is_valid():
-            # Save uploaded files temporarily
-            curriculum = request.FILES["curriculum"]
-            occupational_standard = request.FILES["occupational_standard"]
-            
-            curriculum_bytes = curriculum.read()
-            os_bytes = occupational_standard.read()
-
-            # Step 1: Upload both files to OpenAI
-            try:
-                curriculum_file = client.files.create(
-                    file=(curriculum.name, curriculum_bytes, "application/pdf"),
-                    purpose="user_data"
-                )
-                os_file = client.files.create(
-                    file=(occupational_standard.name, os_bytes, "application/pdf"),
-                    purpose="user_data"
-                )
-
-                # Add timeout safeguard
-                response = client.responses.create(
-                    model="gpt-5",
-                    input=[
-                        {
-                            "role": "user",
-                            "content": [
-                                {
-                                    "type": "input_text", 
-                                    "text": "Generate a learning plan from the documents."
-                                },
-                                {
-                                    "type": "input_file", 
-                                    "file_id": curriculum_file.id
-                                },
-                                {
-                                    "type": "input_file", 
-                                    "file_id": os_file.id
-                                },
-                            ],
-                        }
-                    ],
-                    timeout=60  # 60 sec max wait
-                )
-
-                logging.warning(f"OpenAI Response: {response}")
-
-                if response.output and len(response.output) > 0:
-                    ai_output = response.output[0].content[0].text
-                else:
-                    ai_output = "No output returned."
-
-                request.session["ai_output"] = ai_output
-                return redirect("show_results")
-
-            except Exception as e:
-                logging.error(f"OpenAI error: {e}")
-                return render(request, "front-end/upload.html", {
-                    "form": form,
-                    "error": f"OpenAI request failed: {e}"
-                })
-
-    return render(request, "front-end/upload.html", {"form": form})
 
 def show_results(request):
     ai_output = request.session.get("ai_output", "No results found.")

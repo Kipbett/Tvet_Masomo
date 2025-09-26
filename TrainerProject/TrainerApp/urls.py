@@ -31,8 +31,12 @@ urlpatterns = [
     path('payment-wait/', views.payment_wait, name='payment-wait'),
     path('check-transaction-status/', views.check_transaction_status, name='check-transaction-status'),
     path('contact', views.contact, name='contact'),
-    path('ai/forms/', views.upload_and_analyze, name='ai'),
+    path('ai/forms/', views.upload_form, name='ai'),
     path("results/", views.show_results, name="show_results"),
+    
+    path("upload-and-start/", views.upload_and_start, name="upload_and_start"),
+    path("check-task-status/<str:task_id>/", views.check_task_status, name="check_task_status"),
+    path("download/<str:filename>/", views.download_file, name="download_file"),
 ]
 
 if settings.DEBUG:
